@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Twitter Downloader</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Twitter Downloader</h1>
+    </header>
+    
+    <main>
+      <section class="profile-section">
+        <div class="section-header">
+          <h2>Twitter Profiles</h2>
+          <button id="add-profile-btn" class="btn primary">Add Profile</button>
+        </div>
+        
+        <div id="profile-list" class="profile-list">
+          <!-- Profiles will be loaded here dynamically -->
+          <div class="loading">Loading profiles...</div>
+        </div>
+      </section>
+    </main>
+    
+    <!-- Add Profile Modal -->
+    <div id="add-profile-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Twitter Profile</h2>
+        <form id="add-profile-form">
+          <div class="form-group">
+            <label for="profile-url">Twitter Profile URL:</label>
+            <input type="text" id="profile-url" placeholder="https://twitter.com/username" required>
+          </div>
+          <div class="form-group">
+            <label for="display-name">Display Name (optional):</label>
+            <input type="text" id="display-name" placeholder="Display Name">
+          </div>
+          <button type="submit" class="btn primary">Add Profile</button>
+        </form>
+      </div>
+    </div>
+    
+    <footer>
+      <div class="info">
+        <p>Running on: Node.js <span id="node-version"></span> | Chromium <span id="chrome-version"></span> | Electron <span id="electron-version"></span></p>
+      </div>
+    </footer>
+  </div>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>
