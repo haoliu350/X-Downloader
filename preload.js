@@ -9,6 +9,12 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('add-profile', username, profileUrl, displayName),
   deleteProfile: (id) => ipcRenderer.invoke('delete-profile', id),
   
+  // Cookie operations
+  getBrowserCookies: (browserType) => ipcRenderer.invoke('get-browser-cookies', browserType),
+  getStoredCookies: () => ipcRenderer.invoke('get-stored-cookies'),
+  saveCookiesManually: (cookieData) => ipcRenderer.invoke('save-cookies-manually', cookieData),
+  deleteCookies: () => ipcRenderer.invoke('delete-cookies'),
+  
   // Version information
   getVersions: () => {
     return {

@@ -54,6 +54,7 @@
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
+    "keytar": "^7.9.0",
     "sqlite3": "^5.1.7"
   }
 }

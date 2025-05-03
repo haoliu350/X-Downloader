@@ -10,10 +10,17 @@
   <div class="container">
     <header>
       <h1>Twitter Downloader</h1>
+      <nav>
+        <ul>
+          <li><a href="#profiles" class="active">Profiles</a></li>
+          <li><a href="#cookies">Cookies</a></li>
+        </ul>
+      </nav>
     </header>
     
     <main>
-      <section class="profile-section">
+      <!-- Profiles Section -->
+      <section id="profiles" class="section profile-section">
         <div class="section-header">
           <h2>Twitter Profiles</h2>
           <button id="add-profile-btn" class="btn primary">Add Profile</button>
@@ -22,6 +29,51 @@
         <div id="profile-list" class="profile-list">
           <!-- Profiles will be loaded here dynamically -->
           <div class="loading">Loading profiles...</div>
+        </div>
+      </section>
+      
+      <!-- Cookies Section -->
+      <section id="cookies" class="section cookie-section hidden">
+        <div class="section-header">
+          <h2>Twitter Authentication</h2>
+        </div>
+        
+        <div class="cookie-status">
+          <h3>Cookie Status</h3>
+          <div id="cookie-status-display">
+            <div class="loading">Checking cookie status...</div>
+          </div>
+        </div>
+        
+        <div class="browser-cookie-section">
+          <h3>Import Cookies from Browser</h3>
+          <p>Select a browser to import Twitter cookies from:</p>
+          <div class="browser-buttons">
+            <button id="chrome-cookies-btn" class="btn browser-btn">
+              <span class="browser-icon chrome-icon"></span>
+              Chrome
+            </button>
+            <button id="firefox-cookies-btn" class="btn browser-btn">
+              <span class="browser-icon firefox-icon"></span>
+              Firefox
+            </button>
+          </div>
+        </div>
+        
+        <div class="manual-cookie-section">
+          <h3>Manual Cookie Input</h3>
+          <p>If automatic import doesn't work, you can manually input your Twitter cookies:</p>
+          <form id="manual-cookie-form">
+            <div class="form-group">
+              <label for="cookie-data">Cookie Data (JSON format):</label>
+              <textarea id="cookie-data" rows="6" placeholder='[{"name": "auth_token", "value": "your_auth_token"}, {"name": "ct0", "value": "your_ct0_value"}]'></textarea>
+            </div>
+            <button type="submit" class="btn primary">Save Cookies</button>
+          </form>
+        </div>
+        
+        <div class="cookie-actions">
+          <button id="delete-cookies-btn" class="btn danger">Delete Cookies</button>
         </div>
       </section>
     </main>

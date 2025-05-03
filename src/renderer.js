@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load profiles
   loadProfiles();
   
+  // Check cookie status
+  checkCookieStatus();
+  
   // Set up event listeners
   setupEventListeners();
 });
@@ -174,3 +177,222 @@ function handleDownloadMedia(event) {
   
   alert(`Download functionality for ${profileName} will be implemented in a future update.`);
 }
+
+// Check cookie status
+async function checkCookieStatus() {
+  const cookieStatusDisplay = document.getElementById('cookie-status-display');
+  
+  try {
+    const cookies = await window.api.getStoredCookies();
+    
+    if (cookies && cookies.cookie_data) {
+      // Parse the cookie data
+      const cookieData = JSON.parse(cookies.cookie_data);
+      
+      // Check if essential cookies are present
+      const authToken = cookieData.find(cookie => cookie.name === 'auth_token');
+      const ct0 = cookieData.find(cookie => cookie.name === 'ct0');
+      
+      if (authToken && ct0) {
+        cookieStatusDisplay.innerHTML = `
+          <div class="cookie-status-valid">
+            <p><strong>✓ Twitter authentication cookies are valid</strong></p>
+            <p>Last updated: ${new Date(cookies.added_date).toLocaleString()}</p>
+          </div>
+        `;
+      } else {
+        cookieStatusDisplay.innerHTML = `
+          <div class="cookie-status-invalid">
+            <p><strong>⚠️ Twitter authentication cookies are incomplete</strong></p>
+            <p>Missing required cookies. Please import cookies again.</p>
+          </div>
+        `;
+      }
+    } else {
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-invalid">
+          <p><strong>⚠️ No Twitter authentication cookies found</strong></p>
+          <p>Please import cookies from your browser or enter them manually.</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error checking cookie status:', error);
+    cookieStatusDisplay.innerHTML = `
+      <div class="cookie-status-invalid">
+        <p><strong>⚠️ Error checking cookie status</strong></p>
+        <p>Please try again later.</p>
+      </div>
+    `;
+  }
+}
+
+// Extract cookies from browser
+async function extractBrowserCookies(browserType) {
+  const cookieStatusDisplay = document.getElementById('cookie-status-display');
+  cookieStatusDisplay.innerHTML = `<div class="loading">Extracting cookies from ${browserType}...</div>`;
+  
+  try {
+    const result = await window.api.getBrowserCookies(browserType);
+    
+    if (result.success) {
+      // Show success message
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-valid">
+          <p><strong>✓ Twitter authentication cookies extracted successfully</strong></p>
+          <p>${result.message}</p>
+        </div>
+      `;
+      
+      // Refresh cookie status after a short delay
+      setTimeout(checkCookieStatus, 1000);
+    } else {
+      // Show error message
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-invalid">
+          <p><strong>⚠️ Failed to extract Twitter cookies</strong></p>
+          <p>${result.message}</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error extracting cookies:', error);
+    cookieStatusDisplay.innerHTML = `
+      <div class="cookie-status-invalid">
+        <p><strong>⚠️ Error extracting cookies</strong></p>
+        <p>${error.message || 'Unknown error'}</p>
+      </div>
+    `;
+  }
+}
+
+// Handle manual cookie input
+async function handleManualCookies(event) {
+  event.preventDefault();
+  
+  const cookieDataInput = document.getElementById('cookie-data');
+  const cookieData = cookieDataInput.value.trim();
+  const cookieStatusDisplay = document.getElementById('cookie-status-display');
+  
+  if (!cookieData) {
+    alert('Please enter cookie data');
+    return;
+  }
+  
+  cookieStatusDisplay.innerHTML = `<div class="loading">Saving cookies...</div>`;
+  
+  try {
+    // Validate JSON format
+    JSON.parse(cookieData);
+    
+    const result = await window.api.saveCookiesManually(cookieData);
+    
+    if (result.success) {
+      // Show success message
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-valid">
+          <p><strong>✓ Twitter authentication cookies saved successfully</strong></p>
+          <p>${result.message}</p>
+        </div>
+      `;
+      
+      // Clear the input
+      cookieDataInput.value = '';
+      
+      // Refresh cookie status after a short delay
+      setTimeout(checkCookieStatus, 1000);
+    } else {
+      // Show error message
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-invalid">
+          <p><strong>⚠️ Failed to save Twitter cookies</strong></p>
+          <p>${result.message}</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error saving cookies:', error);
+    cookieStatusDisplay.innerHTML = `
+      <div class="cookie-status-invalid">
+        <p><strong>⚠️ Invalid cookie data format</strong></p>
+        <p>Please enter valid JSON data.</p>
+      </div>
+    `;
+  }
+}
+
+// Handle deleting cookies
+async function handleDeleteCookies() {
+  if (confirm('Are you sure you want to delete all stored cookies?')) {
+    const cookieStatusDisplay = document.getElementById('cookie-status-display');
+    cookieStatusDisplay.innerHTML = `<div class="loading">Deleting cookies...</div>`;
+    
+    try {
+      const result = await window.api.deleteCookies();
+      
+      if (result.success) {
+        // Show success message
+        cookieStatusDisplay.innerHTML = `
+          <div class="cookie-status-invalid">
+            <p><strong>✓ Twitter authentication cookies deleted</strong></p>
+            <p>${result.message}</p>
+          </div>
+        `;
+      } else {
+        // Show error message
+        cookieStatusDisplay.innerHTML = `
+          <div class="cookie-status-invalid">
+            <p><strong>⚠️ Failed to delete Twitter cookies</strong></p>
+            <p>${result.message}</p>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error deleting cookies:', error);
+      cookieStatusDisplay.innerHTML = `
+        <div class="cookie-status-invalid">
+          <p><strong>⚠️ Error deleting cookies</strong></p>
+          <p>${error.message || 'Unknown error'}</p>
+        </div>
+      `;
+    }
+  }
+}
+
+// Navigation
+const navLinks = document.querySelectorAll('nav a');
+const sections = document.querySelectorAll('.section');
+
+navLinks.forEach(link => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    
+    // Remove active class from all links
+    navLinks.forEach(l => l.classList.remove('active'));
+    
+    // Add active class to clicked link
+    link.classList.add('active');
+    
+    // Hide all sections
+    sections.forEach(section => section.classList.add('hidden'));
+    
+    // Show the target section
+    const targetId = link.getAttribute('href').substring(1);
+    document.getElementById(targetId).classList.remove('hidden');
+  });
+});
+
+// Browser cookie buttons
+document.getElementById('chrome-cookies-btn').addEventListener('click', () => {
+  extractBrowserCookies('chrome');
+});
+
+document.getElementById('firefox-cookies-btn').addEventListener('click', () => {
+  extractBrowserCookies('firefox');
+});
+
+// Manual cookie form
+document.getElementById('manual-cookie-form').addEventListener('submit', handleManualCookies);
+
+// Delete cookies button
+document.getElementById('delete-cookies-btn').addEventListener('click', handleDeleteCookies);
